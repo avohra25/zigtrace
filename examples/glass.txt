@@ -1,0 +1,29 @@
+# Glass and metal under an open sky, with a shallow depth of field.
+image 480 270
+samples 64
+depth 16
+camera from 0 1.2 4.5 to 0 0.6 0 fov 35 aperture 0.12 focus 4.4
+background sky 1 1 1  0.45 0.65 1.0
+
+material floor  lambertian 0.55 0.55 0.5
+material glass  dielectric 1.5
+material water  dielectric 1.33
+material copper metal 0.95 0.64 0.54 0.25
+material mirror metal 0.95 0.95 0.95
+material blue   lambertian 0.1 0.2 0.6
+material warm   emissive 6 3.5 1.5
+
+plane 0 0 0  0 1 0  floor
+
+sphere 0 0.6 0 0.6 glass
+sphere 0 0.6 0 -0.55 glass             # negative radius: hollow glass bubble
+sphere -1.35 0.45 -0.4 0.45 copper
+sphere 1.35 0.45 -0.4 0.45 blue
+sphere 0.6 0.18 1.0 0.18 water
+sphere -0.7 0.15 1.1 0.15 warm
+
+# A mirrored tetrahedron in the background.
+triangle -0.6 0 -2.2   0.6 0 -2.2   0 0 -1.2   mirror
+triangle -0.6 0 -2.2   0 1.2 -1.9   0.6 0 -2.2  mirror
+triangle 0.6 0 -2.2    0 1.2 -1.9   0 0 -1.2    mirror
+triangle 0 0 -1.2      0 1.2 -1.9   -0.6 0 -2.2 mirror

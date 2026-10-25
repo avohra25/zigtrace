@@ -1,0 +1,621 @@
+# A field of random spheres around three large ones (BVH stress test).
+image 600 340
+samples 64
+depth 16
+camera from 13 2 3 to 0 0 0 fov 20 aperture 0.1 focus 10
+background sky 1 1 1  0.5 0.7 1.0
+
+material ground lambertian 0.5 0.5 0.5
+material glass dielectric 1.5
+material brown lambertian 0.4 0.2 0.1
+material polished metal 0.7 0.6 0.5 0.0
+
+material m0 metal 0.607 0.936 0.818 0.017
+material m1 lambertian 0.25 0.085 0.426
+material m2 metal 0.59 0.679 0.735 0.042
+material m3 lambertian 0.242 0.03 0.032
+material m4 lambertian 0.035 0.141 0.094
+material m5 lambertian 0.244 0.047 0.014
+material m6 lambertian 0.219 0.136 0.022
+material m7 lambertian 0.666 0.032 0.355
+material m8 lambertian 0.244 0.15 0.312
+material m10 lambertian 0.57 0.345 0.004
+material m11 lambertian 0.48 0.017 0.142
+material m12 lambertian 0.032 0.677 0.057
+material m13 lambertian 0.151 0.475 0.153
+material m14 lambertian 0.133 0.19 0.202
+material m15 metal 0.642 0.637 0.929 0.111
+material m16 lambertian 0.213 0.335 0.027
+material m17 lambertian 0.094 0.71 0.025
+material m18 lambertian 0.304 0.114 0.476
+material m19 metal 0.988 0.954 0.523 0.34
+material m20 metal 0.908 0.516 0.854 0.304
+material m23 lambertian 0.167 0.618 0.142
+material m24 lambertian 0.505 0.094 0.05
+material m26 metal 0.566 0.597 0.739 0.171
+material m27 metal 0.731 0.569 0.619 0.364
+material m28 lambertian 0.341 0.25 0.352
+material m29 lambertian 0.324 0.022 0.002
+material m30 metal 0.573 0.828 0.511 0.144
+material m31 lambertian 0.027 0.123 0.15
+material m32 lambertian 0.012 0.078 0.288
+material m33 lambertian 0.873 0.515 0.209
+material m35 lambertian 0.159 0.359 0.113
+material m37 metal 0.72 0.639 0.935 0.171
+material m38 lambertian 0.087 0.154 0.834
+material m39 lambertian 0.01 0.304 0.191
+material m40 lambertian 0.399 0.349 0.02
+material m42 lambertian 0.142 0.588 0.441
+material m43 lambertian 0.027 0.834 0.331
+material m44 metal 0.774 0.785 0.959 0.369
+material m45 lambertian 0.173 0.066 0.209
+material m46 lambertian 0.591 0.146 0.088
+material m47 lambertian 0.024 0.276 0.041
+material m48 metal 0.99 0.804 0.915 0.279
+material m49 lambertian 0.356 0.176 0.453
+material m50 lambertian 0.143 0.179 0.152
+material m52 lambertian 0.009 0.812 0.421
+material m53 lambertian 0.081 0.602 0.027
+material m54 lambertian 0.103 0.023 0.272
+material m55 metal 0.966 0.553 0.595 0.134
+material m57 lambertian 0.108 0.35 0.273
+material m58 lambertian 0.348 0.965 0.094
+material m59 lambertian 0.128 0.094 0.6
+material m60 lambertian 0.026 0.073 0.067
+material m61 lambertian 0.052 0.488 0.093
+material m62 lambertian 0.495 0.392 0.398
+material m63 lambertian 0.187 0.055 0.19
+material m64 lambertian 0.193 0.28 0.234
+material m65 lambertian 0.036 0.782 0.043
+material m66 lambertian 0.112 0.283 0.252
+material m67 lambertian 0.099 0.016 0.014
+material m68 lambertian 0.66 0.075 0.094
+material m69 metal 0.789 0.535 0.516 0.16
+material m71 lambertian 0.024 0.953 0.538
+material m72 lambertian 0.214 0.106 0.053
+material m73 lambertian 0.357 0.107 0.355
+material m74 lambertian 0.501 0.189 0.368
+material m76 lambertian 0.252 0.054 0.476
+material m77 lambertian 0.792 0.133 0.254
+material m79 lambertian 0.01 0.313 0.096
+material m80 lambertian 0.39 0.017 0.123
+material m81 lambertian 0.48 0.307 0.797
+material m82 metal 0.591 0.859 0.651 0.155
+material m83 metal 0.914 0.507 0.926 0.278
+material m84 lambertian 0.805 0.242 0.109
+material m85 metal 0.673 0.61 0.602 0.238
+material m86 metal 0.656 0.586 0.984 0.165
+material m87 lambertian 0.044 0.108 0.109
+material m88 lambertian 0.39 0.064 0.051
+material m89 lambertian 0.214 0.18 0.452
+material m90 lambertian 0.175 0.053 0.169
+material m91 lambertian 0.006 0.08 0.376
+material m92 lambertian 0.09 0.796 0.221
+material m93 lambertian 0.233 0.669 0.17
+material m94 lambertian 0.037 0.278 0.439
+material m95 lambertian 0.646 0.06 0.083
+material m96 lambertian 0.525 0.25 0.088
+material m97 lambertian 0.097 0.175 0.092
+material m98 lambertian 0.115 0.657 0.104
+material m99 lambertian 0.105 0.516 0.217
+material m100 metal 0.98 0.891 0.79 0.321
+material m101 lambertian 0.643 0.134 0.211
+material m102 lambertian 0.215 0.006 0.368
+material m103 lambertian 0.369 0.61 0.121
+material m104 metal 0.96 0.619 0.871 0.085
+material m105 lambertian 0.098 0.12 0.202
+material m106 lambertian 0.359 0.026 0.28
+material m107 lambertian 0.66 0.012 0.14
+material m108 metal 0.845 0.814 0.829 0.276
+material m109 lambertian 0.31 0.201 0.0
+material m110 metal 0.986 0.686 0.906 0.346
+material m111 lambertian 0.154 0.007 0.292
+material m112 lambertian 0.048 0.351 0.667
+material m114 lambertian 0.067 0.127 0.102
+material m115 metal 0.955 0.582 0.608 0.035
+material m116 lambertian 0.124 0.163 0.029
+material m117 lambertian 0.114 0.027 0.293
+material m118 lambertian 0.073 0.465 0.3
+material m119 lambertian 0.347 0.126 0.016
+material m120 lambertian 0.223 0.002 0.387
+material m121 metal 0.524 0.876 0.751 0.227
+material m122 lambertian 0.093 0.452 0.637
+material m123 lambertian 0.312 0.008 0.241
+material m124 lambertian 0.008 0.241 0.27
+material m125 lambertian 0.569 0.343 0.087
+material m126 lambertian 0.021 0.344 0.846
+material m127 lambertian 0.231 0.242 0.38
+material m128 lambertian 0.036 0.337 0.071
+material m129 lambertian 0.015 0.626 0.278
+material m130 lambertian 0.024 0.196 0.504
+material m131 metal 0.506 0.993 0.735 0.289
+material m132 lambertian 0.187 0.332 0.082
+material m133 lambertian 0.0 0.39 0.636
+material m134 lambertian 0.339 0.24 0.384
+material m135 lambertian 0.42 0.063 0.252
+material m136 lambertian 0.119 0.02 0.055
+material m137 lambertian 0.006 0.037 0.153
+material m138 lambertian 0.28 0.396 0.023
+material m139 lambertian 0.391 0.012 0.263
+material m140 lambertian 0.336 0.229 0.605
+material m141 lambertian 0.071 0.257 0.08
+material m142 lambertian 0.138 0.048 0.669
+material m143 lambertian 0.589 0.372 0.418
+material m144 metal 0.507 0.981 0.875 0.383
+material m145 metal 0.762 0.561 0.604 0.158
+material m146 lambertian 0.025 0.714 0.527
+material m147 lambertian 0.078 0.612 0.131
+material m148 lambertian 0.424 0.009 0.938
+material m149 lambertian 0.043 0.136 0.047
+material m150 lambertian 0.067 0.038 0.464
+material m151 metal 0.736 0.836 0.615 0.206
+material m152 lambertian 0.22 0.29 0.817
+material m153 metal 0.992 0.832 0.607 0.022
+material m154 metal 0.508 0.818 0.899 0.091
+material m155 lambertian 0.495 0.07 0.516
+material m156 lambertian 0.222 0.534 0.013
+material m158 lambertian 0.349 0.107 0.073
+material m159 lambertian 0.665 0.062 0.016
+material m162 lambertian 0.364 0.838 0.874
+material m163 metal 0.939 0.568 0.985 0.157
+material m164 lambertian 0.002 0.165 0.202
+material m165 lambertian 0.491 0.48 0.612
+material m166 lambertian 0.183 0.055 0.308
+material m167 metal 0.642 0.728 0.645 0.141
+material m168 metal 0.521 0.946 0.955 0.398
+material m169 lambertian 0.372 0.011 0.408
+material m170 lambertian 0.606 0.008 0.149
+material m172 lambertian 0.079 0.064 0.087
+material m173 lambertian 0.012 0.675 0.075
+material m174 lambertian 0.816 0.057 0.001
+material m176 lambertian 0.006 0.013 0.09
+material m177 lambertian 0.258 0.281 0.18
+material m178 lambertian 0.062 0.228 0.271
+material m179 lambertian 0.145 0.239 0.14
+material m180 metal 0.632 0.513 0.812 0.004
+material m181 lambertian 0.358 0.516 0.11
+material m182 lambertian 0.162 0.154 0.677
+material m183 lambertian 0.014 0.332 0.246
+material m184 lambertian 0.142 0.819 0.208
+material m185 lambertian 0.056 0.112 0.883
+material m186 metal 0.908 0.834 0.834 0.222
+material m187 lambertian 0.686 0.018 0.0
+material m188 lambertian 0.381 0.096 0.322
+material m189 lambertian 0.293 0.534 0.241
+material m190 lambertian 0.148 0.011 0.457
+material m191 lambertian 0.743 0.055 0.232
+material m192 lambertian 0.006 0.139 0.096
+material m193 lambertian 0.293 0.015 0.527
+material m194 lambertian 0.248 0.252 0.359
+material m195 metal 0.965 0.809 0.68 0.342
+material m197 lambertian 0.49 0.245 0.099
+material m199 lambertian 0.651 0.569 0.104
+material m200 metal 0.633 0.642 0.625 0.134
+material m202 lambertian 0.439 0.046 0.199
+material m203 lambertian 0.283 0.356 0.358
+material m204 lambertian 0.395 0.036 0.245
+material m205 lambertian 0.003 0.088 0.386
+material m206 lambertian 0.421 0.12 0.408
+material m207 metal 0.666 0.567 0.726 0.008
+material m208 metal 0.822 0.823 0.983 0.348
+material m210 lambertian 0.018 0.63 0.055
+material m211 lambertian 0.519 0.071 0.366
+material m212 lambertian 0.166 0.028 0.11
+material m213 lambertian 0.707 0.11 0.071
+material m216 lambertian 0.347 0.153 0.657
+material m217 metal 0.602 0.973 0.891 0.314
+material m218 metal 0.884 0.673 0.802 0.325
+material m219 lambertian 0.449 0.004 0.234
+material m220 lambertian 0.004 0.289 0.075
+material m221 lambertian 0.424 0.174 0.44
+material m222 metal 0.508 0.551 0.855 0.328
+material m223 lambertian 0.201 0.34 0.221
+material m225 metal 0.912 0.93 0.901 0.254
+material m227 lambertian 0.211 0.474 0.173
+material m228 lambertian 0.773 0.118 0.103
+material m231 lambertian 0.053 0.281 0.317
+material m232 metal 0.511 0.97 0.81 0.14
+material m233 lambertian 0.406 0.149 0.038
+material m234 lambertian 0.018 0.091 0.147
+material m235 metal 0.835 0.717 0.732 0.278
+material m237 lambertian 0.059 0.085 0.052
+material m238 lambertian 0.467 0.349 0.699
+material m239 lambertian 0.072 0.011 0.231
+material m240 lambertian 0.532 0.636 0.48
+material m242 lambertian 0.412 0.475 0.84
+material m243 lambertian 0.021 0.175 0.589
+material m244 lambertian 0.456 0.321 0.477
+material m245 lambertian 0.592 0.008 0.1
+material m246 metal 0.846 0.8 0.634 0.072
+material m247 lambertian 0.007 0.114 0.254
+material m248 metal 0.913 0.672 0.927 0.371
+material m249 metal 0.991 0.848 0.508 0.377
+material m250 lambertian 0.433 0.039 0.024
+material m251 lambertian 0.615 0.451 0.581
+material m252 lambertian 0.27 0.586 0.311
+material m253 lambertian 0.037 0.037 0.002
+material m254 metal 0.533 0.617 0.586 0.138
+material m255 lambertian 0.554 0.082 0.375
+material m256 lambertian 0.462 0.007 0.172
+material m257 metal 0.594 0.856 0.711 0.328
+material m258 lambertian 0.01 0.178 0.483
+material m259 lambertian 0.22 0.422 0.212
+material m260 lambertian 0.313 0.155 0.031
+material m261 lambertian 0.042 0.035 0.082
+material m262 lambertian 0.057 0.729 0.059
+material m263 lambertian 0.161 0.063 0.228
+material m264 lambertian 0.733 0.144 0.098
+material m265 lambertian 0.074 0.735 0.181
+material m266 lambertian 0.036 0.263 0.092
+material m267 lambertian 0.0 0.162 0.144
+material m268 lambertian 0.001 0.694 0.081
+material m269 lambertian 0.44 0.019 0.257
+material m270 lambertian 0.386 0.265 0.028
+material m271 lambertian 0.085 0.237 0.347
+material m272 metal 0.736 0.963 0.515 0.178
+material m273 lambertian 0.037 0.479 0.051
+material m274 lambertian 0.237 0.225 0.022
+material m276 metal 0.551 0.89 0.91 0.237
+material m277 metal 0.915 0.678 0.682 0.258
+material m278 metal 0.557 0.937 0.651 0.371
+material m279 lambertian 0.061 0.15 0.048
+material m281 lambertian 0.146 0.035 0.579
+material m282 metal 0.727 0.743 0.596 0.369
+material m283 metal 0.706 0.616 0.53 0.075
+material m284 lambertian 0.13 0.327 0.508
+material m285 lambertian 0.194 0.179 0.014
+material m286 lambertian 0.064 0.199 0.538
+material m287 lambertian 0.103 0.225 0.012
+material m288 lambertian 0.161 0.438 0.315
+material m289 lambertian 0.411 0.733 0.386
+material m290 lambertian 0.832 0.447 0.036
+material m291 lambertian 0.195 0.067 0.05
+material m293 metal 0.852 0.898 0.674 0.21
+material m294 metal 0.897 0.771 0.863 0.162
+material m295 lambertian 0.208 0.037 0.304
+material m296 lambertian 0.007 0.037 0.01
+material m297 lambertian 0.224 0.298 0.023
+material m298 lambertian 0.243 0.358 0.097
+material m299 lambertian 0.478 0.003 0.302
+material m300 lambertian 0.482 0.309 0.027
+material m301 lambertian 0.49 0.949 0.428
+material m302 lambertian 0.0 0.084 0.677
+material m303 lambertian 0.092 0.161 0.038
+material m304 lambertian 0.176 0.017 0.022
+material m305 metal 0.563 0.887 0.781 0.283
+material m306 metal 0.989 0.59 0.652 0.321
+material m307 lambertian 0.175 0.118 0.539
+material m308 lambertian 0.388 0.769 0.029
+material m309 lambertian 0.278 0.001 0.074
+material m310 lambertian 0.127 0.035 0.456
+material m311 lambertian 0.478 0.036 0.227
+material m312 lambertian 0.423 0.222 0.108
+material m313 lambertian 0.155 0.021 0.086
+material m314 lambertian 0.088 0.091 0.768
+material m315 lambertian 0.13 0.151 0.055
+material m316 lambertian 0.004 0.145 0.658
+material m317 lambertian 0.552 0.468 0.17
+
+sphere 0 -1000 0 1000 ground
+sphere 0 1 0 1 glass
+sphere -4 1 0 1 brown
+sphere 4 1 0 1 polished
+sphere -8.661 0.2 -8.166 0.2 m0
+sphere -8.142 0.2 -7.77 0.2 m1
+sphere -8.285 0.2 -6.438 0.2 m2
+sphere -8.124 0.2 -5.428 0.2 m3
+sphere -8.493 0.2 -4.537 0.2 m4
+sphere -8.496 0.2 -3.608 0.2 m5
+sphere -8.633 0.2 -2.267 0.2 m6
+sphere -8.883 0.2 -1.917 0.2 m7
+sphere -8.85 0.2 -0.486 0.2 m8
+sphere -8.597 0.2 0.319 0.2 glass
+sphere -8.9 0.2 1.68 0.2 m10
+sphere -8.328 0.2 2.233 0.2 m11
+sphere -8.756 0.2 3.846 0.2 m12
+sphere -8.754 0.2 4.084 0.2 m13
+sphere -8.933 0.2 5.821 0.2 m14
+sphere -8.585 0.2 6.26 0.2 m15
+sphere -8.607 0.2 7.464 0.2 m16
+sphere -8.561 0.2 8.324 0.2 m17
+sphere -7.953 0.2 -8.913 0.2 m18
+sphere -7.194 0.2 -7.718 0.2 m19
+sphere -7.114 0.2 -6.904 0.2 m20
+sphere -7.326 0.2 -5.948 0.2 glass
+sphere -7.933 0.2 -4.924 0.2 glass
+sphere -7.567 0.2 -3.839 0.2 m23
+sphere -7.896 0.2 -2.113 0.2 m24
+sphere -7.597 0.2 -1.448 0.2 glass
+sphere -7.801 0.2 -0.837 0.2 m26
+sphere -7.106 0.2 0.059 0.2 m27
+sphere -7.841 0.2 1.381 0.2 m28
+sphere -7.21 0.2 2.401 0.2 m29
+sphere -7.51 0.2 3.235 0.2 m30
+sphere -7.152 0.2 4.231 0.2 m31
+sphere -7.201 0.2 5.383 0.2 m32
+sphere -7.915 0.2 6.577 0.2 m33
+sphere -7.881 0.2 7.536 0.2 glass
+sphere -7.547 0.2 8.768 0.2 m35
+sphere -6.318 0.2 -8.574 0.2 glass
+sphere -6.985 0.2 -7.765 0.2 m37
+sphere -6.209 0.2 -6.509 0.2 m38
+sphere -6.519 0.2 -5.305 0.2 m39
+sphere -6.43 0.2 -4.894 0.2 m40
+sphere -6.207 0.2 -3.451 0.2 glass
+sphere -6.794 0.2 -2.304 0.2 m42
+sphere -6.383 0.2 -1.242 0.2 m43
+sphere -6.159 0.2 -0.491 0.2 m44
+sphere -6.464 0.2 0.488 0.2 m45
+sphere -6.634 0.2 1.788 0.2 m46
+sphere -6.742 0.2 2.251 0.2 m47
+sphere -6.445 0.2 3.532 0.2 m48
+sphere -6.917 0.2 4.098 0.2 m49
+sphere -6.249 0.2 5.33 0.2 m50
+sphere -6.789 0.2 6.387 0.2 glass
+sphere -6.812 0.2 7.593 0.2 m52
+sphere -6.558 0.2 8.819 0.2 m53
+sphere -5.782 0.2 -8.231 0.2 m54
+sphere -5.144 0.2 -7.651 0.2 m55
+sphere -5.703 0.2 -6.425 0.2 glass
+sphere -5.822 0.2 -5.75 0.2 m57
+sphere -5.712 0.2 -4.481 0.2 m58
+sphere -5.511 0.2 -3.503 0.2 m59
+sphere -5.858 0.2 -2.774 0.2 m60
+sphere -5.512 0.2 -1.964 0.2 m61
+sphere -5.206 0.2 -0.999 0.2 m62
+sphere -5.716 0.2 0.506 0.2 m63
+sphere -5.877 0.2 1.565 0.2 m64
+sphere -5.311 0.2 2.031 0.2 m65
+sphere -5.216 0.2 3.061 0.2 m66
+sphere -5.345 0.2 4.005 0.2 m67
+sphere -5.324 0.2 5.252 0.2 m68
+sphere -5.558 0.2 6.682 0.2 m69
+sphere -5.151 0.2 7.068 0.2 glass
+sphere -5.988 0.2 8.021 0.2 m71
+sphere -4.68 0.2 -8.638 0.2 m72
+sphere -4.85 0.2 -7.593 0.2 m73
+sphere -4.111 0.2 -6.328 0.2 m74
+sphere -4.151 0.2 -5.755 0.2 glass
+sphere -4.732 0.2 -4.233 0.2 m76
+sphere -4.876 0.2 -3.47 0.2 m77
+sphere -4.612 0.2 -2.219 0.2 glass
+sphere -4.885 0.2 -1.282 0.2 m79
+sphere -4.74 0.2 -0.517 0.2 m80
+sphere -4.634 0.2 0.824 0.2 m81
+sphere -4.46 0.2 1.187 0.2 m82
+sphere -4.709 0.2 2.556 0.2 m83
+sphere -4.659 0.2 3.79 0.2 m84
+sphere -4.616 0.2 4.138 0.2 m85
+sphere -4.947 0.2 5.717 0.2 m86
+sphere -4.12 0.2 6.616 0.2 m87
+sphere -4.156 0.2 7.225 0.2 m88
+sphere -4.578 0.2 8.68 0.2 m89
+sphere -3.892 0.2 -8.673 0.2 m90
+sphere -3.58 0.2 -7.895 0.2 m91
+sphere -3.892 0.2 -6.228 0.2 m92
+sphere -3.108 0.2 -5.158 0.2 m93
+sphere -3.902 0.2 -4.962 0.2 m94
+sphere -3.993 0.2 -3.364 0.2 m95
+sphere -3.825 0.2 -2.351 0.2 m96
+sphere -3.314 0.2 -1.23 0.2 m97
+sphere -3.569 0.2 -0.871 0.2 m98
+sphere -3.262 0.2 1.828 0.2 m99
+sphere -3.56 0.2 2.728 0.2 m100
+sphere -3.803 0.2 3.732 0.2 m101
+sphere -3.864 0.2 4.388 0.2 m102
+sphere -3.396 0.2 5.683 0.2 m103
+sphere -3.971 0.2 6.085 0.2 m104
+sphere -3.572 0.2 7.139 0.2 m105
+sphere -3.74 0.2 8.511 0.2 m106
+sphere -2.873 0.2 -8.717 0.2 m107
+sphere -2.925 0.2 -7.953 0.2 m108
+sphere -2.862 0.2 -6.583 0.2 m109
+sphere -2.529 0.2 -5.301 0.2 m110
+sphere -2.317 0.2 -4.652 0.2 m111
+sphere -2.9 0.2 -3.568 0.2 m112
+sphere -2.777 0.2 -2.297 0.2 glass
+sphere -2.415 0.2 -1.587 0.2 m114
+sphere -2.32 0.2 -0.814 0.2 m115
+sphere -2.585 0.2 0.657 0.2 m116
+sphere -2.274 0.2 1.06 0.2 m117
+sphere -2.696 0.2 2.706 0.2 m118
+sphere -2.803 0.2 3.083 0.2 m119
+sphere -2.543 0.2 4.098 0.2 m120
+sphere -2.577 0.2 5.313 0.2 m121
+sphere -2.898 0.2 6.666 0.2 m122
+sphere -2.103 0.2 7.03 0.2 m123
+sphere -2.849 0.2 8.29 0.2 m124
+sphere -1.717 0.2 -8.775 0.2 m125
+sphere -1.565 0.2 -7.934 0.2 m126
+sphere -1.424 0.2 -6.187 0.2 m127
+sphere -1.763 0.2 -5.519 0.2 m128
+sphere -1.367 0.2 -4.906 0.2 m129
+sphere -1.966 0.2 -3.979 0.2 m130
+sphere -1.495 0.2 -2.989 0.2 m131
+sphere -1.465 0.2 -1.681 0.2 m132
+sphere -1.381 0.2 -0.788 0.2 m133
+sphere -1.221 0.2 0.192 0.2 m134
+sphere -1.784 0.2 1.702 0.2 m135
+sphere -1.406 0.2 2.501 0.2 m136
+sphere -1.17 0.2 3.841 0.2 m137
+sphere -1.594 0.2 4.187 0.2 m138
+sphere -1.805 0.2 5.241 0.2 m139
+sphere -1.726 0.2 6.459 0.2 m140
+sphere -1.113 0.2 7.066 0.2 m141
+sphere -1.797 0.2 8.364 0.2 m142
+sphere -0.57 0.2 -8.282 0.2 m143
+sphere -0.557 0.2 -7.851 0.2 m144
+sphere -0.304 0.2 -6.667 0.2 m145
+sphere -0.449 0.2 -5.671 0.2 m146
+sphere -0.162 0.2 -4.399 0.2 m147
+sphere -0.419 0.2 -3.687 0.2 m148
+sphere -0.487 0.2 -2.623 0.2 m149
+sphere -0.763 0.2 -1.18 0.2 m150
+sphere -0.505 0.2 1.808 0.2 m151
+sphere -0.799 0.2 2.584 0.2 m152
+sphere -0.757 0.2 3.371 0.2 m153
+sphere -0.743 0.2 4.396 0.2 m154
+sphere -0.691 0.2 5.789 0.2 m155
+sphere -0.471 0.2 6.807 0.2 m156
+sphere -0.63 0.2 7.233 0.2 glass
+sphere -0.316 0.2 8.507 0.2 m158
+sphere 0.787 0.2 -8.445 0.2 m159
+sphere 0.427 0.2 -7.572 0.2 glass
+sphere 0.212 0.2 -6.552 0.2 glass
+sphere 0.712 0.2 -5.437 0.2 m162
+sphere 0.483 0.2 -4.524 0.2 m163
+sphere 0.323 0.2 -3.463 0.2 m164
+sphere 0.493 0.2 -2.444 0.2 m165
+sphere 0.861 0.2 -1.525 0.2 m166
+sphere 0.685 0.2 -0.691 0.2 m167
+sphere 0.405 0.2 0.85 0.2 m168
+sphere 0.367 0.2 1.866 0.2 m169
+sphere 0.105 0.2 2.415 0.2 m170
+sphere 0.683 0.2 3.595 0.2 glass
+sphere 0.265 0.2 4.293 0.2 m172
+sphere 0.061 0.2 5.13 0.2 m173
+sphere 0.5 0.2 6.106 0.2 m174
+sphere 0.266 0.2 7.06 0.2 glass
+sphere 0.167 0.2 8.203 0.2 m176
+sphere 1.333 0.2 -8.449 0.2 m177
+sphere 1.192 0.2 -7.312 0.2 m178
+sphere 1.536 0.2 -6.263 0.2 m179
+sphere 1.059 0.2 -5.841 0.2 m180
+sphere 1.781 0.2 -4.129 0.2 m181
+sphere 1.899 0.2 -3.644 0.2 m182
+sphere 1.862 0.2 -2.321 0.2 m183
+sphere 1.854 0.2 -1.977 0.2 m184
+sphere 1.355 0.2 -0.327 0.2 m185
+sphere 1.067 0.2 0.87 0.2 m186
+sphere 1.391 0.2 1.112 0.2 m187
+sphere 1.592 0.2 2.155 0.2 m188
+sphere 1.403 0.2 3.048 0.2 m189
+sphere 1.197 0.2 4.648 0.2 m190
+sphere 1.881 0.2 5.882 0.2 m191
+sphere 1.573 0.2 6.531 0.2 m192
+sphere 1.159 0.2 7.559 0.2 m193
+sphere 1.021 0.2 8.076 0.2 m194
+sphere 2.422 0.2 -8.151 0.2 m195
+sphere 2.731 0.2 -7.225 0.2 glass
+sphere 2.556 0.2 -6.187 0.2 m197
+sphere 2.517 0.2 -5.694 0.2 glass
+sphere 2.416 0.2 -4.789 0.2 m199
+sphere 2.022 0.2 -3.482 0.2 m200
+sphere 2.711 0.2 -2.222 0.2 glass
+sphere 2.093 0.2 -1.358 0.2 m202
+sphere 2.042 0.2 -0.521 0.2 m203
+sphere 2.349 0.2 0.411 0.2 m204
+sphere 2.384 0.2 1.392 0.2 m205
+sphere 2.537 0.2 2.254 0.2 m206
+sphere 2.395 0.2 3.163 0.2 m207
+sphere 2.545 0.2 4.702 0.2 m208
+sphere 2.447 0.2 5.834 0.2 glass
+sphere 2.766 0.2 6.422 0.2 m210
+sphere 2.175 0.2 7.883 0.2 m211
+sphere 2.073 0.2 8.661 0.2 m212
+sphere 3.882 0.2 -8.106 0.2 m213
+sphere 3.415 0.2 -7.127 0.2 glass
+sphere 3.082 0.2 -6.537 0.2 glass
+sphere 3.468 0.2 -5.497 0.2 m216
+sphere 3.624 0.2 -4.272 0.2 m217
+sphere 3.172 0.2 -3.787 0.2 m218
+sphere 3.018 0.2 -2.44 0.2 m219
+sphere 3.075 0.2 -1.93 0.2 m220
+sphere 3.043 0.2 -0.955 0.2 m221
+sphere 3.092 0.2 0.332 0.2 m222
+sphere 3.532 0.2 1.193 0.2 m223
+sphere 3.06 0.2 2.268 0.2 glass
+sphere 3.606 0.2 3.703 0.2 m225
+sphere 3.428 0.2 4.728 0.2 glass
+sphere 3.814 0.2 5.409 0.2 m227
+sphere 3.168 0.2 6.834 0.2 m228
+sphere 3.023 0.2 7.403 0.2 glass
+sphere 3.158 0.2 8.851 0.2 glass
+sphere 4.888 0.2 -8.319 0.2 m231
+sphere 4.497 0.2 -7.774 0.2 m232
+sphere 4.51 0.2 -6.47 0.2 m233
+sphere 4.097 0.2 -5.694 0.2 m234
+sphere 4.626 0.2 -4.845 0.2 m235
+sphere 4.163 0.2 -3.114 0.2 glass
+sphere 4.609 0.2 -2.598 0.2 m237
+sphere 4.865 0.2 -1.264 0.2 m238
+sphere 4.162 0.2 1.813 0.2 m239
+sphere 4.403 0.2 2.234 0.2 m240
+sphere 4.128 0.2 3.179 0.2 glass
+sphere 4.728 0.2 4.227 0.2 m242
+sphere 4.194 0.2 5.5 0.2 m243
+sphere 4.288 0.2 6.352 0.2 m244
+sphere 4.632 0.2 7.541 0.2 m245
+sphere 4.288 0.2 8.114 0.2 m246
+sphere 5.33 0.2 -8.186 0.2 m247
+sphere 5.366 0.2 -7.336 0.2 m248
+sphere 5.704 0.2 -6.358 0.2 m249
+sphere 5.187 0.2 -5.279 0.2 m250
+sphere 5.392 0.2 -4.639 0.2 m251
+sphere 5.404 0.2 -3.165 0.2 m252
+sphere 5.159 0.2 -2.812 0.2 m253
+sphere 5.244 0.2 -1.629 0.2 m254
+sphere 5.097 0.2 -0.544 0.2 m255
+sphere 5.695 0.2 0.076 0.2 m256
+sphere 5.565 0.2 1.349 0.2 m257
+sphere 5.134 0.2 2.438 0.2 m258
+sphere 5.005 0.2 3.166 0.2 m259
+sphere 5.507 0.2 4.41 0.2 m260
+sphere 5.823 0.2 5.152 0.2 m261
+sphere 5.86 0.2 6.452 0.2 m262
+sphere 5.712 0.2 7.795 0.2 m263
+sphere 5.703 0.2 8.201 0.2 m264
+sphere 6.23 0.2 -8.341 0.2 m265
+sphere 6.609 0.2 -7.194 0.2 m266
+sphere 6.775 0.2 -6.247 0.2 m267
+sphere 6.1 0.2 -5.989 0.2 m268
+sphere 6.507 0.2 -4.601 0.2 m269
+sphere 6.672 0.2 -3.718 0.2 m270
+sphere 6.815 0.2 -2.585 0.2 m271
+sphere 6.244 0.2 -1.824 0.2 m272
+sphere 6.41 0.2 -0.412 0.2 m273
+sphere 6.205 0.2 0.648 0.2 m274
+sphere 6.094 0.2 1.786 0.2 glass
+sphere 6.667 0.2 2.469 0.2 m276
+sphere 6.566 0.2 3.039 0.2 m277
+sphere 6.394 0.2 4.761 0.2 m278
+sphere 6.249 0.2 5.476 0.2 m279
+sphere 6.059 0.2 6.529 0.2 glass
+sphere 6.883 0.2 7.691 0.2 m281
+sphere 6.848 0.2 8.089 0.2 m282
+sphere 7.591 0.2 -8.135 0.2 m283
+sphere 7.041 0.2 -7.235 0.2 m284
+sphere 7.206 0.2 -6.482 0.2 m285
+sphere 7.634 0.2 -5.766 0.2 m286
+sphere 7.196 0.2 -4.97 0.2 m287
+sphere 7.051 0.2 -3.43 0.2 m288
+sphere 7.701 0.2 -2.142 0.2 m289
+sphere 7.637 0.2 -1.25 0.2 m290
+sphere 7.107 0.2 -0.257 0.2 m291
+sphere 7.108 0.2 0.842 0.2 glass
+sphere 7.757 0.2 1.581 0.2 m293
+sphere 7.374 0.2 2.527 0.2 m294
+sphere 7.468 0.2 3.22 0.2 m295
+sphere 7.164 0.2 4.375 0.2 m296
+sphere 7.259 0.2 5.084 0.2 m297
+sphere 7.605 0.2 6.703 0.2 m298
+sphere 7.429 0.2 7.83 0.2 m299
+sphere 7.198 0.2 8.253 0.2 m300
+sphere 8.315 0.2 -8.919 0.2 m301
+sphere 8.266 0.2 -7.207 0.2 m302
+sphere 8.007 0.2 -6.447 0.2 m303
+sphere 8.232 0.2 -5.101 0.2 m304
+sphere 8.433 0.2 -4.938 0.2 m305
+sphere 8.331 0.2 -3.297 0.2 m306
+sphere 8.56 0.2 -2.842 0.2 m307
+sphere 8.084 0.2 -1.902 0.2 m308
+sphere 8.717 0.2 -0.891 0.2 m309
+sphere 8.405 0.2 0.855 0.2 m310
+sphere 8.838 0.2 1.716 0.2 m311
+sphere 8.809 0.2 2.488 0.2 m312
+sphere 8.484 0.2 3.824 0.2 m313
+sphere 8.56 0.2 4.476 0.2 m314
+sphere 8.622 0.2 5.775 0.2 m315
+sphere 8.302 0.2 6.821 0.2 m316
+sphere 8.65 0.2 7.659 0.2 m317
+sphere 8.126 0.2 8.285 0.2 glass
