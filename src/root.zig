@@ -7,6 +7,10 @@ pub const geometry = @import("geometry.zig");
 pub const Material = @import("material.zig").Material;
 pub const material = @import("material.zig");
 pub const Bvh = @import("bvh.zig").Bvh;
+pub const camera = @import("camera.zig");
+pub const Scene = @import("scene.zig").Scene;
+pub const scene = @import("scene.zig");
+pub const render = @import("render.zig");
 pub const image = @import("image.zig");
 
 test {

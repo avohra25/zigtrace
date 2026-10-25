@@ -18,8 +18,10 @@ zig build test
 - [x] HDR image buffer, tone mapping (none/Reinhard/ACES), gamma, PPM output
 - [x] Spheres, planes, triangles, AABBs; Lambertian, metal, dielectric and emissive materials
 - [x] Binned-SAH BVH, tested against brute-force intersection
-- [ ] Camera, integrator, multithreaded renderer
+- [x] Thin-lens camera, path tracing integrator, multithreaded tile renderer
 - [ ] Scene files, CLI, PNG output
+
+`zig build run -Doptimize=ReleaseFast` renders a built-in demo scene to `demo.ppm`.
 
 ## License
 
