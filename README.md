@@ -17,7 +17,7 @@ zig build test
 - [x] Vector math, rays, deterministic xoshiro256++ RNG with sampling helpers
 - [x] HDR image buffer, tone mapping (none/Reinhard/ACES), gamma, PPM output
 - [x] Spheres, planes, triangles, AABBs; Lambertian, metal, dielectric and emissive materials
-- [ ] BVH
+- [x] Binned-SAH BVH, tested against brute-force intersection
 - [ ] Camera, integrator, multithreaded renderer
 - [ ] Scene files, CLI, PNG output
 

@@ -6,6 +6,7 @@ pub const Aabb = @import("aabb.zig").Aabb;
 pub const geometry = @import("geometry.zig");
 pub const Material = @import("material.zig").Material;
 pub const material = @import("material.zig");
+pub const Bvh = @import("bvh.zig").Bvh;
 pub const image = @import("image.zig");
 
 test {
