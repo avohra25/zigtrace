@@ -6,6 +6,7 @@ const Ray = @import("ray.zig").Ray;
 const Rng = @import("rng.zig").Rng;
 const Image = @import("image.zig").Image;
 const Scene = @import("scene.zig").Scene;
+const Hit = @import("geometry.zig").Hit;
 const Camera = @import("camera.zig").Camera;
 
 pub const Options = struct {
@@ -17,6 +18,8 @@ pub const Options = struct {
     threads: usize = 1,
     seed: u64 = 0,
     tile_size: usize = 16,
+    /// Sample emitters directly at diffuse surfaces (next-event estimation).
+    light_sampling: bool = true,
 };
 
 /// Offset that keeps secondary rays from re-hitting their own surface.
@@ -24,20 +27,68 @@ const ray_epsilon = 1e-4;
 /// Paths shorter than this are never terminated by Russian roulette.
 const roulette_depth = 4;
 
-/// Estimates incoming radiance along `ray` with one random path.
+/// Estimates incoming radiance along `ray` with one random path, using
+/// next-event estimation when the scene has lights.
 pub fn trace(scene: *const Scene, initial: Ray, rng: *Rng, max_depth: usize) Vec3 {
+    return traceWith(scene, initial, rng, max_depth, true);
+}
+
+/// Power heuristic (beta = 2) weight for a sample drawn with density `a`
+/// when the other strategy has density `b`.
+fn powerWeight(a: f64, b: f64) f64 {
+    const a2 = a * a;
+    return a2 / (a2 + b * b);
+}
+
+/// Light arriving at a diffuse point straight from one sampled emitter,
+/// weighted against the chance that BSDF sampling would have found the same
+/// direction. Occluded or back-facing samples contribute nothing.
+fn directLight(scene: *const Scene, albedo: Vec3, hit: Hit, rng: *Rng) Vec3 {
+    const ls = scene.lights.sample(hit.point, rng) orelse return Vec3.zero;
+    const cos_s = hit.normal.dot(ls.dir);
+    if (cos_s <= 0 or !(ls.pdf > 0)) return Vec3.zero;
+    const shadow = Ray.init(hit.point, ls.dir);
+    if (scene.intersect(shadow, ray_epsilon, ls.distance * (1 - 1e-6)) != null) return Vec3.zero;
+    const bsdf_pdf = cos_s / std.math.pi;
+    // albedo / pi * cos / pdf, times the MIS weight.
+    const scale = cos_s / (std.math.pi * ls.pdf) * powerWeight(ls.pdf, bsdf_pdf);
+    return albedo.mul(ls.radiance).scale(scale);
+}
+
+/// Like `trace`, with light sampling switched on or off. With it off, only
+/// BSDF sampling finds emitters, which converges far more slowly for small
+/// lights but is a handy reference.
+pub fn traceWith(scene: *const Scene, initial: Ray, rng: *Rng, max_depth: usize, light_sampling: bool) Vec3 {
+    const use_nee = light_sampling and !scene.lights.isEmpty();
     var radiance = Vec3.zero;
     var throughput = Vec3.one;
     var r = initial;
+    // Where the last diffuse bounce started and the density it used, so an
+    // emitter found by that bounce can be weighted against light sampling.
+    // A density of 0 means the previous bounce was not light-sampled.
+    var prev_origin = Vec3.zero;
+    var prev_pdf: f64 = 0;
     var depth: usize = 0;
     while (depth < max_depth) : (depth += 1) {
         const hit = scene.intersect(r, ray_epsilon, std.math.inf(f64)) orelse {
             return radiance.add(throughput.mul(scene.background.radiance(r.dir)));
         };
         const mat = scene.material(hit.material);
-        radiance = radiance.add(throughput.mul(mat.emitted(hit)));
+        const le = mat.emitted(hit);
+        if (le.maxComponent() > 0) {
+            const w = if (prev_pdf > 0) powerWeight(prev_pdf, scene.lights.pdfHit(prev_origin, hit)) else 1.0;
+            radiance = radiance.add(throughput.mul(le).scale(w));
+        }
+        switch (mat) {
+            .lambertian => |m| if (use_nee) {
+                radiance = radiance.add(throughput.mul(directLight(scene, m.albedo, hit, rng)));
+            },
+            else => {},
+        }
         const s = mat.scatter(r, hit, rng) orelse break;
         throughput = throughput.mul(s.attenuation);
+        prev_pdf = if (use_nee and mat == .lambertian) @max(s.ray.dir.dot(hit.normal), 0) / std.math.pi else 0;
+        prev_origin = hit.point;
         r = s.ray;
 
         if (depth + 1 >= roulette_depth) {
@@ -86,7 +137,7 @@ const Context = struct {
                 for (0..ctx.opts.spp) |_| {
                     const s = (@as(f64, @floatFromInt(x)) + rng.float()) / w;
                     const t = (@as(f64, @floatFromInt(y)) + rng.float()) / h;
-                    const c = trace(ctx.scene, ctx.camera.ray(s, t, &rng), &rng, ctx.opts.max_depth);
+                    const c = traceWith(ctx.scene, ctx.camera.ray(s, t, &rng), &rng, ctx.opts.max_depth, ctx.opts.light_sampling);
                     // Drop numerically broken samples rather than poison the pixel.
                     if (c.isFinite()) sum = sum.add(c);
                 }
@@ -234,4 +285,119 @@ test "rejects degenerate options" {
     var opts = testOptions();
     opts.spp = 0;
     try testing.expectError(error.InvalidOptions, render(testing.allocator, &scene, opts));
+}
+
+fn meanRadiance(scene: *const Scene, ray: Ray, seed: u64, n: usize, max_depth: usize, nee: bool) struct { mean: f64, variance: f64 } {
+    var rng = Rng.init(seed);
+    var sum: f64 = 0;
+    var sum2: f64 = 0;
+    for (0..n) |_| {
+        const v = traceWith(scene, ray, &rng, max_depth, nee).x;
+        sum += v;
+        sum2 += v * v;
+    }
+    const nf: f64 = @floatFromInt(n);
+    const mean = sum / nf;
+    return .{ .mean = mean, .variance = sum2 / nf - mean * mean };
+}
+
+fn lampOverFloor(scene: *Scene, lamp_radius: f64) !void {
+    scene.background = .{ .solid = Vec3.zero };
+    const floor = try scene.addMaterial(.{ .lambertian = .{ .albedo = Vec3.splat(0.5) } });
+    const lamp = try scene.addMaterial(.{ .emissive = .{ .color = Vec3.splat(2) } });
+    try scene.add(.{ .plane = .{ .point = Vec3.zero, .normal = Vec3.init(0, 1, 0), .material = floor } });
+    try scene.add(.{ .sphere = .{ .center = Vec3.init(0, 3, 0), .radius = lamp_radius, .material = lamp } });
+    try scene.build();
+}
+
+test "irradiance from a sphere light matches the closed form with and without light sampling" {
+    // A diffuse point directly below a sphere of radius R at distance d has
+    // radiance albedo * Le * (R / d)^2.
+    var scene = Scene.init(testing.allocator);
+    defer scene.deinit();
+    try lampOverFloor(&scene, 1);
+    const down = Ray.init(Vec3.init(0, 1, 0), Vec3.init(0, -1, 0));
+    const expected = 0.5 * 2.0 / 9.0;
+    const with = meanRadiance(&scene, down, 1, 20000, 2, true);
+    const without = meanRadiance(&scene, down, 2, 40000, 2, false);
+    try testing.expectApproxEqRel(expected, with.mean, 0.02);
+    try testing.expectApproxEqRel(expected, without.mean, 0.06);
+}
+
+test "light sampling slashes variance for a small light" {
+    var scene = Scene.init(testing.allocator);
+    defer scene.deinit();
+    try lampOverFloor(&scene, 0.2);
+    const down = Ray.init(Vec3.init(0, 1, 0), Vec3.init(0, -1, 0));
+    const with = meanRadiance(&scene, down, 3, 5000, 2, true);
+    const without = meanRadiance(&scene, down, 3, 5000, 2, false);
+    try testing.expect(with.variance * 10 < without.variance);
+    const expected = 0.5 * 2.0 * 0.04 / 9.0;
+    try testing.expectApproxEqRel(expected, with.mean, 0.02);
+}
+
+test "emitters seen through a mirror are not weighted" {
+    var scene = Scene.init(testing.allocator);
+    defer scene.deinit();
+    scene.background = .{ .solid = Vec3.zero };
+    const mirror = try scene.addMaterial(.{ .metal = .{ .albedo = Vec3.one, .fuzz = 0 } });
+    const lamp = try scene.addMaterial(.{ .emissive = .{ .color = Vec3.init(3, 2, 1) } });
+    try scene.add(.{ .plane = .{ .point = Vec3.zero, .normal = Vec3.init(0, 1, 0), .material = mirror } });
+    try scene.add(.{ .sphere = .{ .center = Vec3.init(8, 4, 0), .radius = 1, .material = lamp } });
+    try scene.build();
+    // This 45 degree ray reflects off the mirror straight into the lamp.
+    const ray = Ray.init(Vec3.init(0, 4, 0), Vec3.init(1, -1, 0).normalize());
+    var rng = Rng.init(9);
+    for ([_]bool{ true, false }) |nee| {
+        const c = traceWith(&scene, ray, &rng, 4, nee);
+        try testing.expect(c.approxEq(Vec3.init(3, 2, 1), 1e-9));
+    }
+}
+
+test "shadowed lights add nothing" {
+    var scene = Scene.init(testing.allocator);
+    defer scene.deinit();
+    try lampOverFloor(&scene, 1);
+    const blocker = try scene.addMaterial(.{ .lambertian = .{ .albedo = Vec3.zero } });
+    try scene.add(.{ .sphere = .{ .center = Vec3.init(0, 1.8, 0), .radius = 0.6, .material = blocker } });
+    try scene.build();
+    // Start beneath the blocker: it hides the lamp for every sampled direction
+    // the cosine lobe reaches at depth 1, and black albedo absorbs the rest.
+    const down = Ray.init(Vec3.init(0, 1, 0), Vec3.init(0, -1, 0));
+    const r = meanRadiance(&scene, down, 4, 2000, 2, true);
+    try testing.expect(r.mean < 0.5 * 2.0 / 9.0 * 0.6);
+}
+
+test "light sampling and plain path tracing agree on a lit room" {
+    var scene = Scene.init(testing.allocator);
+    defer scene.deinit();
+    scene.background = .{ .solid = Vec3.zero };
+    const wall = try scene.addMaterial(.{ .lambertian = .{ .albedo = Vec3.init(0.7, 0.6, 0.5) } });
+    const lamp = try scene.addMaterial(.{ .emissive = .{ .color = Vec3.splat(6) } });
+    const ball = try scene.addMaterial(.{ .lambertian = .{ .albedo = Vec3.init(0.2, 0.5, 0.8) } });
+    try scene.add(.{ .plane = .{ .point = Vec3.zero, .normal = Vec3.init(0, 1, 0), .material = wall } });
+    try scene.addQuad(Vec3.init(-5, 0, -8), Vec3.init(10, 0, 0), Vec3.init(0, 6, 0), wall);
+    // The light faces down (u x v = -y).
+    try scene.addQuad(Vec3.init(-1, 4, -4), Vec3.init(2, 0, 0), Vec3.init(0, 0, 2), lamp);
+    try scene.add(.{ .sphere = .{ .center = Vec3.init(0, 1, -3), .radius = 1, .material = ball } });
+    scene.camera = .{ .look_from = Vec3.init(0, 2, 3), .look_at = Vec3.init(0, 1.5, -3), .vfov = 60 };
+    try scene.build();
+    var opts = testOptions();
+    opts.spp = 256;
+    opts.max_depth = 6;
+    opts.threads = 2;
+    var with = try render(testing.allocator, &scene, opts);
+    defer with.deinit(testing.allocator);
+    opts.light_sampling = false;
+    opts.spp = 1024;
+    var without = try render(testing.allocator, &scene, opts);
+    defer without.deinit(testing.allocator);
+    var mw = Vec3.zero;
+    var mo = Vec3.zero;
+    for (with.pixels, without.pixels) |a, b| {
+        mw = mw.add(a);
+        mo = mo.add(b);
+    }
+    try testing.expect(mw.maxComponent() > 0);
+    try testing.expect(mw.approxEq(mo, 0.05 * mo.maxComponent()));
 }
