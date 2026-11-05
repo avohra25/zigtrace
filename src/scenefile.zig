@@ -267,7 +267,7 @@ test "reports errors with line numbers" {
 }
 
 test "example scenes parse" {
-    inline for (.{ "examples/spheres.txt", "examples/cornell.txt", "examples/glass.txt" }) |path| {
+    inline for (.{ "examples/spheres.txt", "examples/cornell.txt", "examples/glass.txt", "examples/lamps.txt" }) |path| {
         var scene = try parse(testing.allocator, @embedFile(path), null);
         defer scene.deinit();
         try testing.expect(scene.primitiveCount() > 0);

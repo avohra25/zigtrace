@@ -1,0 +1,29 @@
+# Small lights over a floor: the case next-event estimation is built for.
+# Two sphere lamps and one quad lamp light glass, metal and diffuse objects.
+# Try it with and without --no-nee at the same sample count.
+image 480 270
+samples 64
+depth 12
+camera from 0 2.2 6 to 0 0.7 0 fov 34
+background color 0.01 0.012 0.02
+
+material floor  lambertian 0.6 0.6 0.58
+material red    lambertian 0.7 0.12 0.1
+material glass  dielectric 1.5
+material steel  metal 0.85 0.85 0.9 0.08
+material gold   metal 0.95 0.75 0.35 0.3
+material warm   emissive 40 28 16
+material cool   emissive 10 18 40
+material panel  emissive 6 6 5.5
+
+plane 0 0 0  0 1 0  floor
+
+sphere -1.6 0.7 0 0.7 red
+sphere 0 0.7 0.4 0.7 glass
+sphere 1.6 0.7 -0.2 0.7 steel
+sphere 0.1 0.35 -1.8 0.35 gold
+
+# Lamps.
+sphere -2.4 2.6 1.2 0.18 warm
+sphere 2.6 1.6 1.8 0.12 cool
+quad 0.8 3.4 -0.8   -1.6 0 0   0 0 -1.2   panel   # faces down

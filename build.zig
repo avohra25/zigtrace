@@ -13,7 +13,7 @@ pub fn build(b: *std.Build) void {
     });
 
     // Example scenes are embedded into the tests so they are always parseable.
-    for ([_][]const u8{ "spheres", "cornell", "glass" }) |name| {
+    for ([_][]const u8{ "spheres", "cornell", "glass", "lamps" }) |name| {
         const path = b.fmt("examples/{s}.txt", .{name});
         lib_mod.addAnonymousImport(path, .{ .root_source_file = b.path(path) });
     }

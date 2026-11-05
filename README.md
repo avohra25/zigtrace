@@ -16,7 +16,10 @@ seed the output is bit-for-bit identical no matter how many threads you use.
   focus distance, so you get depth of field.
 - **Integrator**: unidirectional path tracing with Russian roulette after a
   few bounces, a configurable maximum depth, and dropping of non-finite
-  samples.
+  samples. Diffuse surfaces also use next-event estimation: they sample the
+  emitters directly with shadow rays and combine that with ordinary path
+  sampling through multiple importance sampling (power heuristic), so small
+  lights converge in a fraction of the samples. `--no-nee` turns it off.
 - **Acceleration**: binned surface-area-heuristic BVH built over a flat node
   array and traversed iteratively, nearest child first. Unbounded planes are
   kept out of the BVH and tested separately.
@@ -61,6 +64,7 @@ zigtrace render <scene.txt> [options]
   --tonemap <op>        none | reinhard | aces (default: aces)
   --exposure <x>        exposure multiplier (default: 1)
   --gamma <g>           display gamma (default: 2.2)
+  --no-nee              disable next-event estimation (plain path tracing)
   -q, --quiet           no statistics
 ```
 
@@ -73,6 +77,7 @@ settings.
 |---|---|
 | `examples/spheres.txt` | About 320 random spheres with depth of field (stresses the BVH) |
 | `examples/glass.txt` | Glass, a hollow bubble, water, rough copper, a mirrored tetrahedron, a small emitter and sky light |
+| `examples/lamps.txt` | Two small sphere lamps and a quad lamp over glass, steel, gold and red spheres; compare with `--no-nee` |
 | `examples/cornell.txt` | The classic Cornell box with an area light, a glass sphere and a steel sphere |
 
 On an 8-core machine with ReleaseFast, `spheres.txt` at 600×340 and 16 spp
@@ -108,7 +113,7 @@ distance is the distance from `from` to `to`.
 
 - **Layout.** `src/root.zig` exposes the renderer as a library module, and
   `src/main.zig` is a thin CLI on top of it. Each file is one concern: `vec`,
-  `rng`, `ray`, `aabb`, `geometry`, `material`, `bvh`, `camera`, `scene`,
+  `rng`, `ray`, `aabb`, `geometry`, `material`, `bvh`, `camera`, `scene`, `light`,
   `render`, `image`, `png` and `scenefile`.
 - **Shapes** are a tagged union (`Shape`) dispatched with `inline else`,
   which avoids vtables and keeps hit testing easy to inline. `Hit` always
@@ -138,9 +143,25 @@ distance is the distance from `from` to `to`.
   reflection, camera depth of field (all lens rays meet at the focus point),
   PNG decoding with `std.compress.zlib`, scene-file error reporting and the
   CLI parser.
-- **Not implemented (yet).** There is no next-event estimation or MIS, so
-  small lights such as the one in the Cornell box converge slowly. There is
-  no texture mapping and no mesh import.
+- **Direct light sampling.** `src/light.zig` collects every emissive sphere
+  and triangle (quads are two triangles) and picks one per shading point with
+  probability proportional to luminance times area, using a CDF and binary
+  search. Triangles are sampled uniformly by area and sphere lights by the
+  cone of directions they subtend, which has no noise from the sphere's
+  silhouette. The sample's pdf is converted to solid angle, a shadow ray
+  checks visibility, and the contribution is weighted against the BSDF
+  sampling pdf with the power heuristic (β = 2). When a BSDF-sampled ray
+  later hits an emitter, `pdfHit` gives the pdf that light sampling would have
+  had for that same direction and the emission is weighted the same way. Paths
+  that arrive at a light after a mirror or glass bounce, and emitters that are
+  not sampled (planes, hollow bubbles, a shading point inside a sphere light),
+  keep full weight. Tests check the closed-form irradiance below a sphere lamp
+  (`albedo * Le * (R/d)^2`), that the estimator agrees with plain path
+  tracing on a lit room, that it has lower variance, and that shadowed lights
+  contribute nothing.
+- **Not implemented (yet).** Light sampling skips specular surfaces, and
+  there is no light tree, so scenes with thousands of lights would want one.
+  There is no texture mapping and no mesh import.
 
 ## License
 

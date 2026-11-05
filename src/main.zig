@@ -3,7 +3,7 @@
 const std = @import("std");
 const zt = @import("zigtrace");
 
-const version = "0.1.0";
+const version = "0.2.0";
 
 const usage =
     \\zigtrace - a physically based Monte Carlo path tracer
@@ -26,6 +26,7 @@ const usage =
     \\  --tonemap <op>           none | reinhard | aces (default: aces)
     \\  --exposure <x>           linear exposure multiplier (default: 1)
     \\  --gamma <g>              display gamma (default: 2.2)
+    \\  --no-nee                 disable next-event estimation (sample lights only by chance)
     \\  -q, --quiet              do not print render statistics
     \\
 ;
@@ -44,6 +45,8 @@ pub const RenderArgs = struct {
     seed: u64 = 0,
     tile: usize = 16,
     output_opts: zt.image.Output = .{ .tonemap = .aces },
+    /// Disables direct light sampling, leaving plain path tracing.
+    no_nee: bool = false,
     quiet: bool = false,
 };
 
@@ -76,6 +79,10 @@ pub fn parseArgs(args: []const []const u8, err: *ArgError) error{InvalidArgs}!Co
         const a = args[i];
         if (eql(a, "-q") or eql(a, "--quiet")) {
             out.quiet = true;
+            continue;
+        }
+        if (eql(a, "--no-nee")) {
+            out.no_nee = true;
             continue;
         }
         if (a.len > 0 and a[0] == '-') {
@@ -202,6 +209,7 @@ fn printInfo(out: anytype, path: []const u8, scene: *const zt.Scene) !void {
         \\scene:       {s}
         \\image:       {d}x{d}, {d} spp, depth {d}
         \\materials:   {d}
+        \\lights:      {d} sampled emitter(s)
         \\primitives:  {d} bounded + {d} planes
         \\bvh:         {d} nodes, depth {d}
         \\
@@ -212,6 +220,7 @@ fn printInfo(out: anytype, path: []const u8, scene: *const zt.Scene) !void {
         scene.settings.spp,
         scene.settings.max_depth,
         scene.materials.items.len,
+        scene.lights.items.len,
         scene.shapes.items.len,
         scene.planes.items.len,
         bvh.nodes.len,
@@ -228,6 +237,7 @@ fn runRender(allocator: std.mem.Allocator, scene: *const zt.Scene, args: RenderA
         .threads = args.threads orelse (std.Thread.getCpuCount() catch 1),
         .seed = args.seed,
         .tile_size = args.tile,
+        .light_sampling = !args.no_nee,
     };
 
     var timer = try std.time.Timer.start();
@@ -282,6 +292,15 @@ test "parse render command" {
     try testing.expectEqual(@as(f64, 2.4), r.output_opts.gamma);
     try testing.expect(r.quiet);
     try testing.expectEqual(@as(?usize, null), r.width);
+}
+
+test "no-nee flag" {
+    const on = (try parseOk(&.{ "render", "s.txt" })).render;
+    try testing.expect(!on.no_nee);
+    const off = (try parseOk(&.{ "render", "--no-nee", "s.txt", "--spp", "8" })).render;
+    try testing.expect(off.no_nee);
+    try testing.expectEqual(@as(?usize, 8), off.spp);
+    try testing.expectEqualStrings("s.txt", off.scene_path);
 }
 
 test "defaults and simple commands" {
