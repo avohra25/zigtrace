@@ -9,6 +9,7 @@ const Hit = geometry.Hit;
 const MaterialId = geometry.MaterialId;
 const Material = @import("material.zig").Material;
 const Bvh = @import("bvh.zig").Bvh;
+const Lights = @import("light.zig").Lights;
 const CameraConfig = @import("camera.zig").CameraConfig;
 
 pub const Background = union(enum) {
@@ -46,6 +47,8 @@ pub const Scene = struct {
     background: Background = .{ .sky = .{ .horizon = Vec3.one, .zenith = Vec3.init(0.5, 0.7, 1.0) } },
     settings: Settings = .{},
     bvh: ?Bvh = null,
+    /// Emissive triangles and spheres, for next-event estimation. Built by `build`.
+    lights: Lights = .{},
 
     pub fn init(allocator: std.mem.Allocator) Scene {
         return .{ .allocator = allocator };
@@ -53,6 +56,7 @@ pub const Scene = struct {
 
     pub fn deinit(self: *Scene) void {
         if (self.bvh) |*b| b.deinit(self.allocator);
+        self.lights.deinit(self.allocator);
         self.materials.deinit(self.allocator);
         self.shapes.deinit(self.allocator);
         self.planes.deinit(self.allocator);
@@ -88,11 +92,13 @@ pub const Scene = struct {
     pub fn build(self: *Scene) !void {
         self.invalidate();
         self.bvh = try Bvh.build(self.allocator, self.shapes.items);
+        self.lights = try Lights.build(self.allocator, self.shapes.items, self.materials.items);
     }
 
     fn invalidate(self: *Scene) void {
         if (self.bvh) |*b| b.deinit(self.allocator);
         self.bvh = null;
+        self.lights.deinit(self.allocator);
     }
 
     pub fn primitiveCount(self: Scene) usize {
